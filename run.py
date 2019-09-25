@@ -53,8 +53,11 @@ if __name__ == '__main__':
     image = TfPoseEstimator.draw_humans(image, humans, imgcopy=False)
 
     try:
+        import matplitlib
+        matplotlib.use('TkAgg')
+        
         import matplotlib.pyplot as plt
-
+        
         fig = plt.figure()
         a = fig.add_subplot(2, 2, 1)
         a.set_title('Result')
