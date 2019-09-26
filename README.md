@@ -1,26 +1,8 @@
 # Game Pose
 
-## Current Command List
+A way to control games using human poses and gestures 
 
-```bash
-* python run_webcam.py --model=mobilenet_thin --resize=432x368 --camera=0
-
-* python run_webcam.py --model=mobilenet_thin --resize=432x368 --camera=0 --interval=5
-
-* python run_webcam.py --model=mobilenet_thin --resize=192x192 --camera=0
-
-* python run_webcam.py --model=mobilenet_thin --camera=0
-
-* python run_webcam.py --model=cmu --resize=656x368 --camera=0
-
-* python run_webcam.py --model=mobilenet_thin --resize=192x192 --camera=0
-
-* python run.py --model=mobilenet_thin --resize=432x368 --image=./images/p1.jpg
-
-* python run_video.py --model=mobilenet_thin --resize=432x368 --video=sample.mp4
-```
-
-Resources & References
+## Resources & References
 
 * [OpenPose](https://github.com/CMU-Perceptual-Computing-Lab/openpose)
 * [Tf Pose Estimation](https://github.com/ildoonet/tf-pose-estimation)

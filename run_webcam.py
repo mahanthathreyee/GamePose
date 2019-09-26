@@ -21,8 +21,8 @@ logger.addHandler(ch)
 
 fps_time = 0
 
-lth = 164
-rth = 492
+lth = int( 656 * (1/3) )
+rth = int( 656 * (2/3) )
 
 def str2bool(v):
     return v.lower() in ("yes", "true", "t", "1")
@@ -44,8 +44,11 @@ if __name__ == '__main__':
     parser.add_argument('--tensorrt', type=str, default="False",
                         help='for tensorrt process.')
 
-    parser.add_argument('--interval', type=int, default=20,
-                        help='for Control rate')
+    parser.add_argument('--hand_angle', type=float, default=45.0,
+                        help='for dynamic interval rate')
+
+    parser.add_argument('--max_frame_rate', type=float, default=30,
+                        help='for dynamic interval rate')
 
     args = parser.parse_args()
 
@@ -63,10 +66,11 @@ if __name__ == '__main__':
     fr_cnt = 1
     f = 1
     keypress_status = False
+    frame_interval = 20
 
-    for i in list(range(4))[::-1]:
-        print(i+1)
-        time.sleep(1)
+    # for i in list(range(4))[::-1]:
+    #     print(i+1)
+    #     time.sleep(1)
     while True:
         ret_val, image = cam.read()
 
@@ -76,10 +80,10 @@ if __name__ == '__main__':
         humans = e.inference(image, resize_to_default=(w > 0 and h > 0), upsample_size=args.resize_out_ratio)
         #humans = e.inference(image, resize_to_default=True, upsample_size=4.0)
         
-        
         fr_cnt+=1
-        if fr_cnt==args.interval:
-            keypress_status =  interface.read_humans(humans[0], f, keypress_status)
+        if fr_cnt==frame_interval:
+            keypress_status, frame_interval =  interface.get_keypress(humans[0], f, keypress_status, args.hand_angle, args.max_frame_rate)
+            print("Frame " + str(f) + ": " + str(frame_interval))
             f += 1
             fr_cnt = 0
 
@@ -97,8 +101,6 @@ if __name__ == '__main__':
         cv2.imshow('tf-pose-estimation result', image)     
 
         fps_time = time.time()
-
-        
 
 
         if cv2.waitKey(1) == 27:
