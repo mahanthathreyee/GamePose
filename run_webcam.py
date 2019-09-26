@@ -47,7 +47,7 @@ if __name__ == '__main__':
     parser.add_argument('--hand_angle', type=float, default=45.0,
                         help='for dynamic interval rate')
 
-    parser.add_argument('--max_frame_rate', type=float, default=30,
+    parser.add_argument('--max_frame_rate', type=float, default=60,
                         help='for dynamic interval rate')
 
     args = parser.parse_args()
@@ -63,8 +63,8 @@ if __name__ == '__main__':
     ret_val, image = cam.read()
     logger.info('cam image=%dx%d' % (image.shape[1], image.shape[0]))
 
-    fr_cnt = 1
-    f = 1
+    frame_interval_count = 1
+    selected_frame_count = 1
     keypress_status = False
     frame_interval = 20
 
@@ -80,12 +80,12 @@ if __name__ == '__main__':
         humans = e.inference(image, resize_to_default=(w > 0 and h > 0), upsample_size=args.resize_out_ratio)
         #humans = e.inference(image, resize_to_default=True, upsample_size=4.0)
         
-        fr_cnt+=1
-        if fr_cnt==frame_interval:
-            keypress_status, frame_interval =  interface.get_keypress(humans[0], f, keypress_status, args.hand_angle, args.max_frame_rate)
-            print("Frame " + str(f) + ": " + str(frame_interval))
-            f += 1
-            fr_cnt = 0
+        frame_interval_count+=1
+        if frame_interval_count==frame_interval and len(humans) > 0:
+            keypress_status, frame_interval =  interface.get_keypress(humans[0], selected_frame_count, keypress_status, args.hand_angle, args.max_frame_rate)
+            print("Frame " + str(selected_frame_count) + ": " + str(frame_interval))
+            selected_frame_count += 1
+            frame_interval_count = 0
 
         logger.debug('postprocess+')
         image = TfPoseEstimator.draw_humans(image, humans, imgcopy=False)
@@ -96,8 +96,10 @@ if __name__ == '__main__':
                     (10, 10),  cv2.FONT_HERSHEY_SIMPLEX, 0.5,
                     (0, 255, 0), 2)
                     
-        cv2.line(image, (lth,63), (lth,368+60), (0,255,0), 3)
-        cv2.line(image, (rth,63), (rth,368+60), (0,255,0), 3)
+        y_offset_top = 62
+        y_offset_bottom = 50
+        cv2.line(image, (lth,y_offset_top), (lth,368+y_offset_bottom), (0,255,0), 3)
+        cv2.line(image, (rth,y_offset_top), (rth,368+y_offset_bottom), (0,0,255), 3)
         cv2.imshow('tf-pose-estimation result', image)     
 
         fps_time = time.time()
