@@ -8,11 +8,8 @@ import numpy as np
 from tf_pose.estimator import TfPoseEstimator
 from tf_pose.networks import get_graph_path, model_wh
 
-import interface
-
 logger = logging.getLogger('TfPoseEstimator-WebCam')
 logger.setLevel(logging.DEBUG)
-logging.disable(logging.DEBUG)
 ch = logging.StreamHandler()
 ch.setLevel(logging.DEBUG)
 formatter = logging.Formatter('[%(asctime)s] [%(name)s] [%(levelname)s] %(message)s')
@@ -20,9 +17,6 @@ ch.setFormatter(formatter)
 logger.addHandler(ch)
 
 fps_time = 0
-
-lth = 164
-rth = 492
 
 def str2bool(v):
     return v.lower() in ("yes", "true", "t", "1")
@@ -43,10 +37,6 @@ if __name__ == '__main__':
     
     parser.add_argument('--tensorrt', type=str, default="False",
                         help='for tensorrt process.')
-
-    parser.add_argument('--interval', type=int, default=20,
-                        help='for Control rate')
-
     args = parser.parse_args()
 
     logger.debug('initialization %s : %s' % (args.model, get_graph_path(args.model)))
@@ -60,28 +50,11 @@ if __name__ == '__main__':
     ret_val, image = cam.read()
     logger.info('cam image=%dx%d' % (image.shape[1], image.shape[0]))
 
-    fr_cnt = 1
-    f = 1
-    keypress_status = False
-
-    for i in list(range(4))[::-1]:
-        print(i+1)
-        time.sleep(1)
     while True:
         ret_val, image = cam.read()
 
-        image = cv2.flip(image,1)
-
         logger.debug('image process+')
         humans = e.inference(image, resize_to_default=(w > 0 and h > 0), upsample_size=args.resize_out_ratio)
-        #humans = e.inference(image, resize_to_default=True, upsample_size=4.0)
-        
-        
-        fr_cnt+=1
-        if fr_cnt==args.interval:
-            keypress_status =  interface.read_humans(humans[0], f, keypress_status)
-            f += 1
-            fr_cnt = 0
 
         logger.debug('postprocess+')
         image = TfPoseEstimator.draw_humans(image, humans, imgcopy=False)
@@ -91,16 +64,8 @@ if __name__ == '__main__':
                     "FPS: %f" % (1.0 / (time.time() - fps_time)),
                     (10, 10),  cv2.FONT_HERSHEY_SIMPLEX, 0.5,
                     (0, 255, 0), 2)
-                    
-        cv2.line(image, (lth,63), (lth,368+60), (0,255,0), 3)
-        cv2.line(image, (rth,63), (rth,368+60), (0,255,0), 3)
-        cv2.imshow('tf-pose-estimation result', image)     
-
+        cv2.imshow('tf-pose-estimation result', image)
         fps_time = time.time()
-
-        
-
-
         if cv2.waitKey(1) == 27:
             break
         logger.debug('finished+')

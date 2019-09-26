@@ -1,4 +1,12 @@
 python run_webcam.py --model=mobilenet_thin --resize=432x368 --camera=0
+python run_webcam.py --model=mobilenet_thin --resize=432x368 --camera=0 --interval=5
+
+python run_webcam.py --model=mobilenet_thin --resize=192x192 --camera=0
+
+python run_webcam.py --model=mobilenet_thin --camera=0
+
+
+python run_webcam.py --model=cmu --resize=656x368 --camera=0
 
 python run_webcam.py --model=mobilenet_thin --resize=192x192 --camera=0
 

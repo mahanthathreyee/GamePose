@@ -270,32 +270,70 @@ class PoseEstimator:
     def __init__(self):
         pass
 
+    # @staticmethod
+    # def estimate_paf(peaks, heat_mat, paf_mat):
+    #     pafprocess.process_paf(peaks, heat_mat, paf_mat)
+
+    #     humans = []
+    #     for human_id in range(pafprocess.get_num_humans()):
+    #         human = Human([])
+    #         is_added = False
+
+    #         for part_idx in range(18):
+    #             c_idx = int(pafprocess.get_part_cid(human_id, part_idx))
+    #             if c_idx < 0:
+    #                 continue
+
+    #             is_added = True
+    #             human.body_parts[part_idx] = BodyPart(
+    #                 '%d-%d' % (human_id, part_idx), part_idx,
+    #                 float(pafprocess.get_part_x(c_idx)) / heat_mat.shape[1],
+    #                 float(pafprocess.get_part_y(c_idx)) / heat_mat.shape[0],
+    #                 pafprocess.get_part_score(c_idx)
+    #             )
+
+    #         if is_added:
+    #             score = pafprocess.get_score(human_id)
+    #             human.score = score
+    #             humans.append(human)
+
+    #     return humans
+
     @staticmethod
     def estimate_paf(peaks, heat_mat, paf_mat):
         pafprocess.process_paf(peaks, heat_mat, paf_mat)
 
         humans = []
+        max_human_score = -1
+        max_human_id = 0
+
         for human_id in range(pafprocess.get_num_humans()):
-            human = Human([])
-            is_added = False
+            temp_score = pafprocess.get_score(human_id)
+            if temp_score > max_human_score:
+                max_human_score = temp_score
+                max_human_id = human_id
 
-            for part_idx in range(18):
-                c_idx = int(pafprocess.get_part_cid(human_id, part_idx))
-                if c_idx < 0:
-                    continue
+        human = Human([])
+        is_added = False
 
-                is_added = True
-                human.body_parts[part_idx] = BodyPart(
-                    '%d-%d' % (human_id, part_idx), part_idx,
-                    float(pafprocess.get_part_x(c_idx)) / heat_mat.shape[1],
-                    float(pafprocess.get_part_y(c_idx)) / heat_mat.shape[0],
-                    pafprocess.get_part_score(c_idx)
-                )
+        for part_idx in range(18):
+            c_idx = int(pafprocess.get_part_cid(max_human_id, part_idx))
+            if c_idx < 0:
+                continue
 
-            if is_added:
-                score = pafprocess.get_score(human_id)
-                human.score = score
-                humans.append(human)
+            is_added = True
+            human.body_parts[part_idx] = BodyPart(
+                '%d-%d' % (max_human_id, part_idx), part_idx,
+                float(pafprocess.get_part_x(c_idx)) / heat_mat.shape[1],
+                float(pafprocess.get_part_y(c_idx)) / heat_mat.shape[0],
+                pafprocess.get_part_score(c_idx)
+            )
+
+        if is_added:
+            #score = pafprocess.get_score(max_human_id)
+            score = max_human_score
+            human.score = score
+            humans.append(human)
 
         return humans
 
