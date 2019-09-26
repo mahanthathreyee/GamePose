@@ -68,8 +68,7 @@ def get_keypress(human, fr, keypress_status, start_hand_angle, max_frame_rate):
             keypress_status = False
             print("\nFrame: "+str(fr)+"idle")
     
-    interval = 30 - int(0.162 * angle)
-    #interval = int( ((max_frame_rate * angle) - (180 * max_frame_rate) + start_hand_angle ) / ( start_hand_angle - 180 ) )
+    interval = int( ((max_frame_rate * angle) - (180 * max_frame_rate) + start_hand_angle ) / ( start_hand_angle - 180 ) )
     print("\n" + str(interval) + "  " + str(angle))
     interval = interval if 0 < interval <= max_frame_rate else max_frame_rate
 
