@@ -33,10 +33,8 @@ def get_keypress(human, fr, keypress_status, start_hand_angle, max_frame_rate):
     rw = human.body_parts.get(7,None)
     l,r = None, None
     if lw:
-        print("\nL  Score: " + str(lw.score))
         l = locate_window(lw.x, lw.y)
     if rw:
-        print("\nR  Score: " + str(rw.score))
         r = locate_window(rw.x, rw.y)
         
     interval = 20
@@ -50,7 +48,7 @@ def get_keypress(human, fr, keypress_status, start_hand_angle, max_frame_rate):
         angle = get_hand_angle(2, human)
         angle = angle if angle else 63
 
-        print("\nFrame: "+str(fr)+" "+l)
+        #print("\nFrame: "+str(fr)+" "+l)
 
     elif r:
         ReleaseKey(A)
@@ -60,16 +58,16 @@ def get_keypress(human, fr, keypress_status, start_hand_angle, max_frame_rate):
         angle = get_hand_angle(5, human)
         angle = angle if angle else 63
         
-        print("\nFrame: "+str(fr)+" "+r)
+        #print("\nFrame: "+str(fr)+" "+r)
 
     elif keypress_status:
             ReleaseKey(A)
             ReleaseKey(D)
             keypress_status = False
-            print("\nFrame: "+str(fr)+"idle")
+            #print("\nFrame: "+str(fr)+"idle")
     
     interval = int( ((max_frame_rate * angle) - (180 * max_frame_rate) + start_hand_angle ) / ( start_hand_angle - 180 ) )
-    print("\n" + str(interval) + "  " + str(angle))
+    #print("\n" + str(interval) + "  " + str(angle))
     interval = interval if 0 < interval <= max_frame_rate else max_frame_rate
 
     return keypress_status, interval

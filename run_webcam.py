@@ -47,7 +47,7 @@ if __name__ == '__main__':
     parser.add_argument('--hand_angle', type=float, default=45.0,
                         help='for dynamic interval rate')
 
-    parser.add_argument('--max_frame_rate', type=float, default=60,
+    parser.add_argument('--max_frame_rate', type=float, default=15,
                         help='for dynamic interval rate')
 
     args = parser.parse_args()
@@ -81,14 +81,14 @@ if __name__ == '__main__':
         #humans = e.inference(image, resize_to_default=True, upsample_size=4.0)
         
         frame_interval_count+=1
-        if frame_interval_count==frame_interval and len(humans) > 0:
+        if frame_interval_count == 5 and len(humans) > 0:
             keypress_status, frame_interval =  interface.get_keypress(humans[0], selected_frame_count, keypress_status, args.hand_angle, args.max_frame_rate)
-            print("Frame " + str(selected_frame_count) + ": " + str(frame_interval))
+            #print("Frame " + str(selected_frame_count) + ": " + str(frame_interval))
             selected_frame_count += 1
             frame_interval_count = 0
-
+        if len(humans) > 0:
+            image = TfPoseEstimator.draw_humans(image, humans, imgcopy=False)
         logger.debug('postprocess+')
-        image = TfPoseEstimator.draw_humans(image, humans, imgcopy=False)
 
         logger.debug('show+')
         cv2.putText(image,
