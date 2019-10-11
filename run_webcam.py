@@ -84,9 +84,11 @@ if __name__ == '__main__':
         logger.debug('image process+')
         humans = e.inference(image, resize_to_default=(w > 0 and h > 0), upsample_size=args.resize_out_ratio)
         
+        #Configure....
         if sk_flag==False:
             image = TfPoseEstimator.draw_humans(image, humans, imgcopy=False)
-            skeleton, sk_flag = configure_skeleton(humans[0])            
+            skeleton, sk_flag = configure_skeleton(humans[0])        
+            frame_interval_count = 0    
         else:
             image = TfPoseEstimator.draw_humans(image, [skeleton], imgcopy=False)
 
@@ -104,6 +106,7 @@ if __name__ == '__main__':
 
         fps_time = time.time()
                 
+        #Processing
         frame_interval_count+=1
         if frame_interval_count == 5 and sk_flag:
             skeleton = update_skeleton(skeleton, humans[0])
