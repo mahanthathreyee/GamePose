@@ -13,6 +13,7 @@ def compute_angle(shoulder, elbow, wrist):
         )
 
         return math.degrees(angle)
+    return None
 
 def get_hand_angle(base_value, human):
     rShoulder = human.body_parts.get(base_value + 0,None)
@@ -71,3 +72,4 @@ def get_keypress(human, fr, keypress_status, start_hand_angle, max_frame_rate):
     interval = interval if 0 < interval <= max_frame_rate else max_frame_rate
 
     return keypress_status, interval
+

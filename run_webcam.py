@@ -6,6 +6,8 @@ import cv2
 import numpy as np
 
 from tf_pose.estimator import TfPoseEstimator
+from tf_pose.estimator import Human
+from skeleton_util import configure_skeleton, update_skeleton
 from tf_pose.networks import get_graph_path, model_wh
 
 import interface
@@ -23,6 +25,10 @@ fps_time = 0
 
 lth = int( 656 * (1/3) )
 rth = int( 656 * (2/3) )
+
+skeleton = None
+sk_flag = False
+status = "Configuring..."
 
 def str2bool(v):
     return v.lower() in ("yes", "true", "t", "1")
@@ -75,24 +81,18 @@ if __name__ == '__main__':
         ret_val, image = cam.read()
 
         image = cv2.flip(image,1)
-
         logger.debug('image process+')
         humans = e.inference(image, resize_to_default=(w > 0 and h > 0), upsample_size=args.resize_out_ratio)
-        #humans = e.inference(image, resize_to_default=True, upsample_size=4.0)
         
-        frame_interval_count+=1
-        if frame_interval_count == 5 and len(humans) > 0:
-            keypress_status, frame_interval =  interface.get_keypress(humans[0], selected_frame_count, keypress_status, args.hand_angle, args.max_frame_rate)
-            #print("Frame " + str(selected_frame_count) + ": " + str(frame_interval))
-            selected_frame_count += 1
-            frame_interval_count = 0
-        if len(humans) > 0:
+        if sk_flag==False:
             image = TfPoseEstimator.draw_humans(image, humans, imgcopy=False)
-        logger.debug('postprocess+')
+            skeleton, sk_flag = configure_skeleton(humans[0])            
+        else:
+            image = TfPoseEstimator.draw_humans(image, [skeleton], imgcopy=False)
 
         logger.debug('show+')
         cv2.putText(image,
-                    "FPS: %f" % (1.0 / (time.time() - fps_time)),
+                    ("FPS: %f - " % (1.0 / (time.time() - fps_time)))+status,
                     (10, 10),  cv2.FONT_HERSHEY_SIMPLEX, 0.5,
                     (0, 255, 0), 2)
                     
@@ -103,6 +103,18 @@ if __name__ == '__main__':
         cv2.imshow('tf-pose-estimation result', image)     
 
         fps_time = time.time()
+                
+        frame_interval_count+=1
+        if frame_interval_count == 5 and sk_flag:
+            skeleton = update_skeleton(skeleton, humans[0])
+            status = "Processing..."
+            keypress_status, frame_interval =  interface.get_keypress(skeleton, selected_frame_count, keypress_status, args.hand_angle, args.max_frame_rate)
+            #print("Frame " + str(selected_frame_count) + ": " + str(frame_interval))
+            selected_frame_count += 1
+            frame_interval_count = 0
+        
+        logger.debug('postprocess+')
+
 
 
         if cv2.waitKey(1) == 27:
