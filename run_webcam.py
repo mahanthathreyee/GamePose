@@ -25,6 +25,8 @@ fps_time = 0
 
 lth = int( 656 * (1/3) )
 rth = int( 656 * (2/3) )
+nTopth = int( 432 * (1/4) )
+nBottonth = int( 432 * (2/4) )
 
 skeleton = None
 sk_flag = False
@@ -71,7 +73,8 @@ if __name__ == '__main__':
 
     frame_interval_count = 1
     selected_frame_count = 1
-    keypress_status = False
+    keypress_status_hand = False
+    keypress_status_nose = False
     frame_interval = 20
 
     # for i in list(range(4))[::-1]:
@@ -102,6 +105,8 @@ if __name__ == '__main__':
         y_offset_bottom = 50
         cv2.line(image, (lth,y_offset_top), (lth,368+y_offset_bottom), (0,255,0), 3)
         cv2.line(image, (rth,y_offset_top), (rth,368+y_offset_bottom), (0,0,255), 3)
+        cv2.line(image, (0,nTopth), (656,nTopth), (255,0,0), 3)
+        cv2.line(image, (0,nBottonth), (656,nBottonth), (255,255,0), 3)
         cv2.imshow('tf-pose-estimation result', image)     
 
         fps_time = time.time()
@@ -111,7 +116,7 @@ if __name__ == '__main__':
         if frame_interval_count == 5 and sk_flag:
             skeleton = update_skeleton(skeleton, humans[0])
             status = "Processing..."
-            keypress_status, frame_interval =  interface.get_keypress(skeleton, selected_frame_count, keypress_status, args.hand_angle, args.max_frame_rate)
+            keypress_status_hand, keypress_status_nose, frame_interval =  interface.get_keypress(skeleton, selected_frame_count, keypress_status_hand, keypress_status_nose, args.hand_angle, args.max_frame_rate)
             #print("Frame " + str(selected_frame_count) + ": " + str(frame_interval))
             selected_frame_count += 1
             frame_interval_count = 0
