@@ -1,3 +1,4 @@
+#skeleton_util.py
 def configure_skeleton(human):
     lw = human.body_parts.get(4,None)
     rw = human.body_parts.get(7,None)

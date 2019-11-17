@@ -80,7 +80,7 @@ if __name__ == '__main__':
     # for i in list(range(4))[::-1]:
     #     print(i+1)
     #     time.sleep(1)
-    while True:
+    while True: 
         ret_val, image = cam.read()
 
         image = cv2.flip(image,1)
